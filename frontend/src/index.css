@@ -1,0 +1,14 @@
+@use "./index.scss" as *;
+@import url("https://fonts.googleapis.com/css2?family=Fjalla+One&display=swap");
+* {
+  box-sizing: border-box;
+  font-family: "Fjalla One", sans-serif;
+  margin: 0;
+  padding: 0;
+}
+.dashboard {
+  height: calc(100vh - 80px);
+}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
