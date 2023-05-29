@@ -1,11 +1,17 @@
-import React, { useRef } from "react";
+import { useEffect, useState } from "react";
 import * as yup from "yup";
-import { useNavigate } from "react-router";
-import { useFormik } from "formik";
+import { Formik, useFormik } from "formik";
+import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
+import Popup from "../../components/UIElementsComponents/Popup";
+import userContext from "../../lib/api/userContext";
+import { useDispatch } from "react-redux";
+import { setUser } from "../../reduser/userReducer";
+
 type Props = {};
 
 function Signup({}: Props) {
-  const navigate = useNavigate();
+  const [showPopup, setShowPopup] = useState(false);
+  const dispatch = useDispatch();
 
   const formSchema = yup.object({
     firstName: yup.string().required("can not be empty"),
@@ -17,6 +23,23 @@ function Signup({}: Props) {
       .min(5, "must be more than 5 characters"),
   });
 
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const uid = url.searchParams.get("uid");
+    const accessToken = url.searchParams.get("access-token");
+    const client = url.searchParams.get("client");
+    const expiry = url.searchParams.get("expiry");
+
+    if (uid && accessToken && client && expiry) {
+      sessionStorage.setItem("uid", uid);
+      sessionStorage.setItem("accessToken", accessToken);
+      sessionStorage.setItem("client", client);
+      sessionStorage.setItem("expiry", expiry);
+
+      window.location.reload();
+    }
+  }, []);
+
   const initialValues = {
     firstName: "",
     lastName: "",
@@ -25,9 +48,17 @@ function Signup({}: Props) {
   };
 
   function submitHandler(event: any) {
-    event.preventDefault();
-    console.log("helllooo");
-    console.log(values);
+    setShowPopup(true);
+    userContext
+      .create({
+        first_name: values.firstName,
+        last_name: values.lastName,
+        email: values.email,
+        password: values.password,
+      })
+      .then((res) => {
+        dispatch(setUser(res.data.user));
+      });
   }
   const {
     values,
@@ -45,7 +76,13 @@ function Signup({}: Props) {
 
   return (
     <>
-      <section className="grid w-full h-screen bg-gray-200 place-items-center text-[#3f3d56] ">
+      {showPopup && (
+        <Popup setShow={setShowPopup} confetti title="Congratulations !">
+          <p>You have successfully registered</p>
+          <p className="text-xs text-gray-500">Close the pop up and proceed</p>
+        </Popup>
+      )}
+      <section className="grid w-full h-screen bg-gray-200 place-items-center text-[#3f3d56]">
         <div className="container grid max-w-screen-lg grid-cols-2 px-8 py-4 mx-auto bg-gray-100 shadow-xl gap-9 rounded-[10px]">
           <div className="flex items-center justify-center grid-cols-1 p-4 border-r-2 border-l-[#393053]">
             <svg
@@ -196,7 +233,7 @@ function Signup({}: Props) {
             </svg>
           </div>
           <div className="flex flex-col justify-center grid-cols-1">
-            <h1 className="text-3xl font-[900] text-[#3f3d56] mb-8 text-center ">
+            <h1 className="text-3xl font-[900] text-[#3f3d56] mb-8 text-center">
               Register
             </h1>
             <form
@@ -222,8 +259,8 @@ function Signup({}: Props) {
                   required
                 />
                 {errors.firstName && touched.firstName && (
-                  <p className="pt-2 text-sm font-semibold text-red-500">
-                    <span className="px-2 py-1 bg-red-100 rounded-full">!</span>{" "}
+                  <p className="pt-2 text-sm font-semibold text-red-500 flex gap-2">
+                    <ExclamationCircleIcon className="w-5 h-5" />
                     First name {errors.firstName}
                   </p>
                 )}
@@ -247,8 +284,8 @@ function Signup({}: Props) {
                   required
                 />
                 {errors.lastName && touched.lastName && (
-                  <p className="pt-2 text-sm font-semibold text-red-500">
-                    <span className="px-2 py-1 bg-red-100 rounded-full">!</span>{" "}
+                  <p className="pt-2 text-sm font-semibold text-red-500 flex gap-2">
+                    <ExclamationCircleIcon className="w-5 h-5" />
                     Last name {errors.lastName}
                   </p>
                 )}
@@ -270,8 +307,8 @@ function Signup({}: Props) {
                   required
                 />
                 {errors.email && touched.email && (
-                  <p className="pt-2 text-sm font-semibold text-red-500">
-                    <span className="px-2 py-1 bg-red-100 rounded-full">!</span>{" "}
+                  <p className="pt-2 text-sm font-semibold text-red-500 flex gap-2">
+                    <ExclamationCircleIcon className="w-5 h-5" />
                     Email {errors.email}
                   </p>
                 )}
@@ -295,8 +332,8 @@ function Signup({}: Props) {
                   required
                 />
                 {errors.password && touched.password && (
-                  <p className="pt-2 text-sm font-semibold text-red-500">
-                    <span className="px-2 py-1 bg-red-100 rounded-full">!</span>{" "}
+                  <p className="pt-2 text-sm font-semibold text-red-500 flex gap-2">
+                    <ExclamationCircleIcon className="w-5 h-5" />
                     Password {errors.password}
                   </p>
                 )}
@@ -314,7 +351,7 @@ function Signup({}: Props) {
                   href="/signin"
                   className="flex pl-2 underline text-violet-500"
                 >
-                  Signin
+                  Sign in
                 </a>
               </p>
             </form>

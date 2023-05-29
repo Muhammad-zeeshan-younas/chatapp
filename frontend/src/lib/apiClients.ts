@@ -4,7 +4,7 @@ import { AppError } from "./AppError";
 
 const redirectToLoginPage = () => {
   window.location.assign(
-    `${window.location.protocol}//${window.location.host}/`
+    `${window.location.protocol}//${window.location.host}/signin`
   );
   return;
 };
@@ -12,9 +12,10 @@ const redirectToLoginPage = () => {
 const checkIfAtLoginPage = () => {
   if (
     window.location.href ===
-    `${window.location.protocol}//${window.location.host}/`
-  )
+    `${window.location.protocol}//${window.location.host}/signin`
+  ) {
     return true;
+  }
 
   return false;
 };
@@ -32,8 +33,8 @@ const throwError = (response: any) => {
     : "Something went wrong, please try again later";
 
   if (checkIfLoggedOut(response)) {
-    if (!checkIfAtLoginPage()) {
-      return redirectToLoginPage();
+    if (checkIfAtLoginPage() == false) {
+      redirectToLoginPage();
     }
   }
 
@@ -67,15 +68,16 @@ const checkResponseStatus = (response: any, error: boolean = false) => {
 
 axiosClient.interceptors.response.use(
   (response) => {
-    if (response.headers.uid) localStorage.setItem("uid", response.headers.uid);
+    if (response.headers.uid)
+      sessionStorage.setItem("uid", response.headers.uid);
     if (response.headers["access-token"])
-      localStorage.setItem("accessToken", response.headers["access-token"]);
+      sessionStorage.setItem("accessToken", response.headers["access-token"]);
     if (response.headers.client)
-      localStorage.setItem("client", response.headers.client);
+      sessionStorage.setItem("client", response.headers.client);
     if (response.headers.expiry)
-      localStorage.setItem("expiry", response.headers.expiry);
+      sessionStorage.setItem("expiry", response.headers.expiry);
     if (response.headers["token-type"])
-      localStorage.setItem("tokenType", response.headers["token-type"]);
+      sessionStorage.setItem("tokenType", response.headers["token-type"]);
 
     checkResponseStatus(response);
 
@@ -93,11 +95,11 @@ axiosClient.interceptors.response.use(
 axiosClient.interceptors.request.use((request) => {
   if (!request?.headers) return request;
 
-  request.headers.uid = localStorage.getItem("uid") || "";
-  request.headers["access-token"] = localStorage.getItem("accessToken") || "";
-  request.headers.client = localStorage.getItem("client") || "";
-  request.headers.expiry = localStorage.getItem("expiry") || "";
-  request.headers.tokenType = localStorage.getItem("tokenType") || "Bearer";
+  request.headers.uid = sessionStorage.getItem("uid") || "";
+  request.headers["access-token"] = sessionStorage.getItem("accessToken") || "";
+  request.headers.client = sessionStorage.getItem("client") || "";
+  request.headers.expiry = sessionStorage.getItem("expiry") || "";
+  request.headers.tokenType = sessionStorage.getItem("tokenType") || "Bearer";
 
   return request;
 });

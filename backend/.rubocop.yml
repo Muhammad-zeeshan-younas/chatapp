@@ -10,11 +10,7 @@ AllCops:
     - "bin/*"
     - "**/.keep"
     - "db/schema.rb"
-    - "db/migrate/*"
-    - "spec/spec_helper.rb"
-    - "spec/rails_helper.rb"
-    - "Gemfile"
-    - "Rakefile"
+    - "spec/fixtures/files/*"
 
 Gemspec/DeprecatedAttributeAssignment:
   Enabled: true
@@ -101,7 +97,7 @@ Lint/UselessRuby2Keywords:
   Enabled: true
 
 Metrics/BlockLength:
-  AllowedPatterns: ["describe", "context"]
+  IgnoredMethods: ["describe", "context"]
 
 Metrics/CyclomaticComplexity:
   Max: 9

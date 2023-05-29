@@ -1,18 +1,48 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import LoginSvg from "../../components/svg/LoginSVG";
+import userContext from "../../lib/api/userContext";
+import { setUser } from "../../reduser/userReducer";
+import { useDispatch } from "react-redux";
+import { toast } from "react-toastify";
 
 type Props = {};
 
 const Login = ({}: Props) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const usernameRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
 
-  function submitHandler(event: React.FormEvent<HTMLFormElement>) {
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const uid = url.searchParams.get("uid");
+    const accessToken = url.searchParams.get("access-token");
+    const client = url.searchParams.get("client");
+    const expiry = url.searchParams.get("expiry");
+
+    if (uid && accessToken && client && expiry) {
+      sessionStorage.setItem("uid", uid);
+      sessionStorage.setItem("accessToken", accessToken);
+      sessionStorage.setItem("client", client);
+      sessionStorage.setItem("expiry", expiry);
+
+      window.location.reload();
+    }
+  }, []);
+
+  async function submitHandler(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    console.log("I am being submitted");
-    navigate("/dashboard");
+    try {
+      await userContext
+        .authenticate({
+          email: usernameRef.current?.value,
+          password: passwordRef.current?.value,
+        })
+        .then((response: any) => {
+          dispatch(setUser(response.data.user));
+        });
+    } catch (err) {}
   }
 
   return (
@@ -23,6 +53,7 @@ const Login = ({}: Props) => {
             <img
               src="./logo.png"
               className="bg-transparent mix-blend-multiply bg-fuchsia-200"
+              alt="logo comes here"
             />
             <h1 className="text-2xl font-bold text-[#3f3d56] mb-4">
               Join our community
@@ -36,6 +67,7 @@ const Login = ({}: Props) => {
                   Username <span className="text-rose-500">*</span>
                 </label>
                 <input
+                  ref={usernameRef}
                   type="email"
                   className="w-full px-4 py-2 outline-none bg-indigo-100 placeholder:text-[#393053] border-b-[#746994] border-b-2"
                   placeholder="example@example.com"
@@ -49,6 +81,7 @@ const Login = ({}: Props) => {
                   type="password"
                   className="w-full px-4 py-2 outline-none bg-indigo-100 placeholder:text-[#393053] border-b-[#746994] border-b-2"
                   placeholder="password"
+                  ref={passwordRef}
                 />
               </div>
               <button className="w-full py-3 text-base font-semibold text-gray-100 bg-[#746994]">

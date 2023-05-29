@@ -1,9 +1,17 @@
 import React from "react";
+import { useDispatch } from "react-redux";
+import { clearUser } from "../../reduser/userReducer";
+import userContext from "../../lib/api/userContext";
 
 type Props = {};
 
 function NavbarLinks({}: Props) {
-  const LogoutHandler = () => {};
+  const dispatch = useDispatch();
+  const LogoutHandler = (event: any) => {
+    event.preventDefault();
+    userContext.logout();
+    dispatch(clearUser());
+  };
   return (
     <ul>
       <li>

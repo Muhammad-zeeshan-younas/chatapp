@@ -3,11 +3,11 @@ const dev = {
 };
 
 const staging = {
-  backend_url: "https://staging-backend.tapp.events/api/v1",
+  backend_url: "",
 };
 
 const production = {
-  backend_url: "https://backend.tapp.events/api/v1",
+  backend_url: "",
 };
 
 export const config = () => {

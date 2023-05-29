@@ -7,7 +7,6 @@ function Chatbox({}: Props) {
   const message = useRef("");
   const handleMessage = (event: FormEvent) => {
     event.preventDefault();
-    console.log(message);
   };
 
   return (

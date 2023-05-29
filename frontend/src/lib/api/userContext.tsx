@@ -12,7 +12,7 @@ const logout = () => {
   return axiosClient.delete("/auth/sign_out");
 };
 
-const get = () => {
+const getUser = () => {
   return axiosClient.get("/user");
 };
 
@@ -20,5 +20,5 @@ export default {
   create,
   authenticate,
   logout,
-  get,
+  getUser,
 };
