@@ -41,6 +41,8 @@ const Login = ({}: Props) => {
         })
         .then((response: any) => {
           dispatch(setUser(response.data.user));
+          navigate("/dashboard");
+          toast.success("You Logged in Successfully");
         });
     } catch (err) {}
   }

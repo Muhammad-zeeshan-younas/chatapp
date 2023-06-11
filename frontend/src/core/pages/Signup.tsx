@@ -6,12 +6,14 @@ import Popup from "../../components/UIElementsComponents/Popup";
 import userContext from "../../lib/api/userContext";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../reduser/userReducer";
+import { useNavigate } from "react-router-dom";
 
 type Props = {};
 
 function Signup({}: Props) {
   const [showPopup, setShowPopup] = useState(false);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const formSchema = yup.object({
     firstName: yup.string().required("can not be empty"),
@@ -58,6 +60,7 @@ function Signup({}: Props) {
       })
       .then((res) => {
         dispatch(setUser(res.data.user));
+        navigate("/dashboard");
       });
   }
   const {

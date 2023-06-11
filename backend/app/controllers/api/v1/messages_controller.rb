@@ -1,20 +1,19 @@
 class Api::V1::MessagesController < ApplicationController
-  before_action :authenticate_user!
+  before_action :authenticate_api_v1_user!
 
   def create
     @channel = Channel.find(params[:channel_id])
     @message = @channel.messages.build(message_params)
-    @message.user = current_user
-
+    @message.user = current_api_v1_user
     if @message.save
-      redirect_to @channel, notice: 'Message created successfully.'
-    else
-      redirect_to @channel, alert: 'Failed to create message.'
+      serialized_message = MessageBlueprint.render_as_json(@message)
+  
+      ActionCable.server.broadcast 'chat_channel', serialized_message
     end
   end
 
   def destroy
-    @message = current_user.messages.find(params[:id])
+    @message = current_api_v1_user.messages.find(params[:id])
     @message.destroy
     redirect_to @message.channel, notice: 'Message deleted successfully.'
   end

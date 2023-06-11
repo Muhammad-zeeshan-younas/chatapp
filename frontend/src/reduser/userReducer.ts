@@ -3,6 +3,7 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import { Channel } from "../components/interfaces/Channel";
 
 export interface UserSlice {
+  id: string;
   first_name: string;
   last_name: string;
   email: string;
@@ -11,6 +12,7 @@ export interface UserSlice {
 }
 
 const initialState: UserSlice = {
+  id: "",
   first_name: "",
   last_name: "",
   email: "",

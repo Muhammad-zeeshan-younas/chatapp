@@ -7,6 +7,7 @@ Rails.application.routes.draw do
         sessions: "api/v1/overrides/sessions",
       }
       resources :user, only: [:index]
+      resources :channels, only: [:index]
       resources :channels do
         resources :messages, only: [:create, :destroy]
       end

@@ -14,6 +14,7 @@ import { clearUser, setUser } from "./reduser/userReducer";
 
 function App() {
   const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(false);
 
   const retrieveUser = useCallback(async () => {
     const checkIfTokenExists = () => {
@@ -34,16 +35,13 @@ function App() {
   }, [dispatch]);
 
   useEffect(() => {
+    setIsLoading(true);
     retrieveUser();
-  }, []);
-
-  useEffect(() => {
-    retrieveUser();
+    setIsLoading(false);
   }, []);
 
   const user = useSelector((state: RootState) => state.user);
 
-  console.log(user);
   const memoizedUser = useMemo(() => user, [user]);
 
   const LoginPage = () => {
@@ -68,18 +66,22 @@ function App() {
   return (
     <>
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<LoginPage />}></Route>
-
-          <Route path="/" element={<PublicRoute />}>
-            <Route path="/signin" element={<Login />}></Route>
-            <Route path="/signup" element={<Signup />}></Route>
-          </Route>
-
-          <Route path="/" element={<PrivateRoute />}>
-            <Route path="/dashboard" element={<Dashboard />}></Route>
-          </Route>
-        </Routes>
+        {isLoading ? (
+          "Loading.. "
+        ) : (
+          <Routes>
+            <Route path="/" element={<PrivateRoute />}>
+              <Route path="/dashboard" element={<Dashboard />}></Route>
+            </Route>
+            <Route path="/" element={<PublicRoute />}>
+              <Route path="/signin" element={<Login />}></Route>
+              <Route path="/signup" element={<Signup />}></Route>
+            </Route>
+            <Route path="/" element={<PrivateRoute />}>
+              <Route path="/dashboard" element={<Dashboard />}></Route>
+            </Route>
+          </Routes>
+        )}
       </BrowserRouter>
       <ToastContainer />
     </>
